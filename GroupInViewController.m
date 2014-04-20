@@ -13,16 +13,18 @@
 #import "GTLGroupinuserendpoint.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
-@interface GroupInViewController ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
+@interface GroupInViewController ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* password;
+@property (nonatomic, strong) UIAlertView* failAlert;
 @end
 
 @implementation GroupInViewController
 
 @synthesize username = _username;
 @synthesize password = _password;
+@synthesize failAlert = _failAlert;
 
 - (void)userImageClicked
 {
@@ -174,39 +176,85 @@
     [sheet showInView:self.view];
 }
 
-- (void)viewDidLoad
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    [super viewDidLoad];
-    
-    [self.navigationItem setTitle:@"GroupIn"];
-    [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"avatar" style:UIBarButtonItemStyleBordered target:self action:@selector(setting)]];
-    self.username = @"yoyosir1";
-    self.password = @"111";
-    if ([self.username isEqualToString:@"yoyosir1"])
+    if (alertView == self.failAlert)
     {
-        self.imageView.image = [UIImage imageNamed:@"avatar1.png"];
+        [self showLoginAlert];
     }
     else
     {
-        self.imageView.image = [UIImage imageNamed:@"missingAvatar.png"];
+        if (buttonIndex == 0)
+        {
+            self.username = [alertView textFieldAtIndex:0].text;
+            self.password = [alertView textFieldAtIndex:1].text;
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/login"]];
+            NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
+            [dic setValue:self.username forKey:@"username"];
+            [dic setValue:self.password forKey:@"password"];
+            NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+            [request setHTTPBody:data];
+            [request setHTTPMethod:@"POST"];
+            NSHTTPURLResponse* urlResponse = nil;
+            NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
+            NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            if (![responseString isEqualToString:@"success"])
+            {
+                self.failAlert = [[UIAlertView alloc] initWithTitle:@"Invalid username or password" message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+                [self.failAlert show];
+            }
+        }
+        else
+        {
+            self.username = [alertView textFieldAtIndex:0].text;
+            self.password = [alertView textFieldAtIndex:1].text;
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/createuser"]];
+            NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
+            [dic setValue:self.username forKey:@"username"];
+            [dic setValue:self.password forKey:@"password"];
+            [dic setValue:self.username forKey:@"nickname"];
+            NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+            [request setHTTPBody:data];
+            [request setHTTPMethod:@"POST"];
+            NSHTTPURLResponse* urlResponse = nil;
+            NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
+            NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            if (![responseString isEqualToString:@"success"])
+            {
+                self.failAlert = [[UIAlertView alloc] initWithTitle:@"Username exists" message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+                [self.failAlert show];
+            }
+        }
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/getavatar"]];
+        NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
+        [dic setValue:self.username forKey:@"username"];
+        NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+        [request setHTTPBody:data];
+        [request setHTTPMethod:@"POST"];
+        NSHTTPURLResponse* urlResponse = nil;
+        NSData* responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
+        //NSLog(@"%@", responseData);
+        self.imageView.image = [[UIImage alloc] initWithData:responseData];
+        //NSLog(@"%f, %f", self.imageView.image.size.width, self.imageView.image.size.height);
     }
-    //NSData* imageData = UIImagePNGRepresentation([UIImage imageNamed:@"icon@2x.png"]);
-    
-    /*
-	*/
-    //self.imageView.image = [[UIImage alloc] initWithData:responseData];
-    
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/getavatar"]];
-    NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
-    [dic setValue:self.username forKey:@"username"];
-    NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
-    [request setHTTPBody:data];
-    [request setHTTPMethod:@"POST"];
-    NSHTTPURLResponse* urlResponse = nil;
-    NSData* responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
-    //NSLog(@"%@", responseData);
-    self.imageView.image = [[UIImage alloc] initWithData:responseData];
-    //NSLog(@"%f, %f", self.imageView.image.size.width, self.imageView.image.size.height);
+}
+
+- (void)showLoginAlert
+{
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Login" message:@"Enter group name and passcode" delegate:self cancelButtonTitle:nil otherButtonTitles:@"Login", @"Signup", nil];
+    [alert setAlertViewStyle:UIAlertViewStyleLoginAndPasswordInput];
+    [[alert textFieldAtIndex:0] setPlaceholder:@"username"];
+    [[alert textFieldAtIndex:1] setPlaceholder:@"password"];
+    [alert show];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [self showLoginAlert];
+
+    [self.navigationItem setTitle:@"GroupIn"];
+    [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"avatar" style:UIBarButtonItemStyleBordered target:self action:@selector(setting)]];
 }
 
 - (void)setting
