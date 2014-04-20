@@ -235,11 +235,17 @@
     UIImage *image = [info valueForKey:UIImagePickerControllerOriginalImage];
     [self dismissViewControllerAnimated:YES completion:nil];
     CGSize size;
-    size.width = image.size.width / 4;
-    size.height = image.size.height / 4;
-    image = [self imageWithImage:image scaledToSize:size];
+    unsigned long length = 100000000;
+    while (length > 1024 * 1024)
+    {
+        size.width = image.size.width / 2;
+        size.height = image.size.height / 2;
+        image = [self imageWithImage:image scaledToSize:size];
+        length = [UIImagePNGRepresentation(image) length];
+    }
     NSLog(@"%lf, %lf", image.size.height, image.size.width);
     NSData* imageData = UIImagePNGRepresentation(image);
+    NSLog(@"%lu", (unsigned long)imageData.length);
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/upload"]];
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     [request setHTTPShouldHandleCookies:NO];

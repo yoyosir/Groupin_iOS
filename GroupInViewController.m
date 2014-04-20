@@ -179,7 +179,7 @@
     [super viewDidLoad];
     
     [self.navigationItem setTitle:@"GroupIn"];
-    [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStyleBordered target:self action:@selector(setting)]];
+    [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"avatar" style:UIBarButtonItemStyleBordered target:self action:@selector(setting)]];
     self.username = @"yoyosir1";
     self.password = @"111";
     if ([self.username isEqualToString:@"yoyosir1"])

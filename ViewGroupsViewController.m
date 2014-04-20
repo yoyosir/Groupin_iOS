@@ -49,8 +49,8 @@
     [dic setValue:self.password forKey:@"password"];
     [self.locationManager startUpdatingLocation];
     CLLocationCoordinate2D _coordinate = self.locationManager.location.coordinate;
-    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"coordinatex"];
-    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"coordinatey"];
+    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"latitude"];
+    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"longitude"];
     NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
     //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
     [request setHTTPBody:data];
@@ -175,8 +175,8 @@
             [dic setValue:self.passcode forKey:@"passcode"];
             [self.locationManager startUpdatingLocation];
             CLLocationCoordinate2D _coordinate = self.locationManager.location.coordinate;
-            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"coordinatex"];
-            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"coordinatey"];
+            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"latitude"];
+            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"longitude"];
             
             
             
