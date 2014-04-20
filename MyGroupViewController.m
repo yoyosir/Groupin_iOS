@@ -23,6 +23,8 @@
 @synthesize groupname = _groupname;
 @synthesize passcode = _passcode;
 @synthesize groups = _groups;
+@synthesize username = _username;
+@synthesize password = _password;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -36,17 +38,19 @@
 
 - (void)loadTableData
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupin-mas.appspot.com/groupin/mygroup"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/mygroup"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"yoyosir1" forKey:@"username"];
-    [dic setValue:@"111" forKey:@"password"];
+    [dic setValue:self.username forKey:@"username"];
+    [dic setValue:self.password forKey:@"password"];
     NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
     [request setHTTPBody:data];
     [request setHTTPMethod:@"POST"];
     NSHTTPURLResponse* urlResponse = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
     self.groups = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil];
-    NSLog(@"%@,Done", [[NSString alloc] initWithData:responseData encoding:4]);
+    NSLog(@"%lu", (unsigned long)[responseData length]);
+    NSLog(@"%@,Done", [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]);
+    NSLog(@".....");
 }
 
 - (void)viewDidLoad
@@ -79,7 +83,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    NSLog(@"%@", self.groups);
+    //NSLog(@"%@", self.groups);
     NSDictionary* dic = [self.groups objectAtIndex:indexPath.row];
     cell.textLabel.text = [dic valueForKey:@"groupname"];
     
@@ -90,7 +94,7 @@
 {
     self.groupname = [[self.groups objectAtIndex:indexPath.row] valueForKey:@"groupname"];
     self.passcode =[[self.groups objectAtIndex:indexPath.row] valueForKey:@"passcode"];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupin-mas.appspot.com/groupin/retrievemessage"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/retrievemessage"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:@"yoyosir1" forKey:@"username"];
     [dic setValue:@"111" forKey:@"password"];

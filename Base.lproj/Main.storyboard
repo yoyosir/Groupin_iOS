@@ -51,13 +51,13 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zjZ-1W-dPH">
-                                <rect key="frame" x="111" y="373" width="99" height="30"/>
+                                <rect key="frame" x="124" y="374" width="73" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Let's group in!">
+                                <state key="normal" title="My groups">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="pFp-iI-Hbc" kind="push" identifier="toMap" id="rdd-5e-X06"/>
+                                    <segue destination="lR4-uB-zS6" kind="push" id="XdD-ca-wad"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fW0-zw-dnK">
@@ -203,50 +203,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PTi-zI-YJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="572" y="746"/>
-        </scene>
-        <!--My Profile View Controller - My Profile-->
-        <scene sceneID="IgL-fA-vdZ">
-            <objects>
-                <viewController id="oq9-wp-PmJ" customClass="MyProfileViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Wdk-2l-6c0"/>
-                        <viewControllerLayoutGuide type="bottom" id="3ug-4R-uH5"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="ELA-Di-gDE">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="5Ny-TO-tVx">
-                                <rect key="frame" x="116" y="130" width="179" height="186"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileTableCell" id="5Vl-aH-R8g">
-                                        <rect key="frame" x="0.0" y="22" width="179" height="44"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5Vl-aH-R8g" id="KDM-vV-GwI">
-                                            <rect key="frame" x="0.0" y="0.0" width="179" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                                <sections/>
-                            </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ybu-QJ-f3m">
-                                <rect key="frame" x="20" y="130" width="88" height="85"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="My Profile" id="r7l-Na-8C1"/>
-                    <connections>
-                        <outlet property="tableView" destination="5Ny-TO-tVx" id="n14-J5-haV"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5Cl-MZ-f5J" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="955" y="43"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ePe-tv-n2k">

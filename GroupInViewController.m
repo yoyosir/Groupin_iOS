@@ -206,7 +206,7 @@
     NSData* responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
     //NSLog(@"%@", responseData);
     self.imageView.image = [[UIImage alloc] initWithData:responseData];
-    NSLog(@"%f, %f", self.imageView.image.size.width, self.imageView.image.size.height);
+    //NSLog(@"%f, %f", self.imageView.image.size.width, self.imageView.image.size.height);
 }
 
 - (void)setting
