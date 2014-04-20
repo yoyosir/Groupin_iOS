@@ -20,6 +20,8 @@
 
 @synthesize annotation = _annotation;
 @synthesize locationManager = _locationManager;
+@synthesize username = _username;
+@synthesize password = _password;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -71,6 +73,7 @@ didChangeDragState:(MKAnnotationViewDragState)newState
     [self.locationManager startUpdatingLocation];
     
     CLLocationCoordinate2D _coordinate = self.locationManager.location.coordinate;
+    NSLog(@"%lf, %lf", _coordinate.latitude, _coordinate.longitude);
     MKCoordinateRegion extentsRegion = MKCoordinateRegionMakeWithDistance(_coordinate, 800, 800);
     
     [map setRegion:extentsRegion animated:YES];

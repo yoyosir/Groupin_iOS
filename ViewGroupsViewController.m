@@ -8,6 +8,7 @@
 
 #import "ViewGroupsViewController.h"
 #import "GroupChatViewController.h"
+#import <MapKit/MapKit.h>
 
 @interface ViewGroupsViewController ()<UITableViewDelegate, UITableViewDataSource, NSURLConnectionDataDelegate, UIAlertViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -16,6 +17,7 @@
 @property (strong, nonatomic) NSString *groupname;
 @property (strong, nonatomic) NSString *passcode;
 @property (strong, nonatomic) UIAlertView* createGroupAlert;
+@property (nonatomic, retain) CLLocationManager *locationManager;
 
 
 @end
@@ -45,13 +47,18 @@
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
+    [self.locationManager startUpdatingLocation];
+    CLLocationCoordinate2D _coordinate = self.locationManager.location.coordinate;
+    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"coordinatex"];
+    [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"coordinatey"];
     NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+    //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
     [request setHTTPBody:data];
     [request setHTTPMethod:@"POST"];
     NSHTTPURLResponse* urlResponse = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
     self.groups = [[NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil] mutableCopy];
-    
+    NSLog(@"%@", [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]);
     
     NSLog(@"%@,Done", self.groups);
 }
@@ -65,6 +72,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.locationManager = [[CLLocationManager alloc] init];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/createuser"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
@@ -165,6 +173,13 @@
             [dic setValue:self.password forKey:@"password"];
             [dic setValue:self.groupname forKey:@"groupname"];
             [dic setValue:self.passcode forKey:@"passcode"];
+            [self.locationManager startUpdatingLocation];
+            CLLocationCoordinate2D _coordinate = self.locationManager.location.coordinate;
+            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.latitude] forKeyPath:@"coordinatex"];
+            [dic setValue:[NSString stringWithFormat:@"%lf", _coordinate.longitude] forKeyPath:@"coordinatey"];
+            
+            
+            
             NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
             [request setHTTPBody:data];
             [request setHTTPMethod:@"POST"];
