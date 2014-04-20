@@ -22,6 +22,8 @@
 @property (strong, nonatomic) NSString* password;
 @property (strong, nonatomic) NSString* groupname;
 @property (strong, nonatomic) NSString* passcode;
+@property (strong, nonatomic) NSMutableDictionary* avatars;
+@property (nonatomic) BOOL isAlive;
 @end
 
 @implementation GroupChatViewController
@@ -31,6 +33,22 @@
 @synthesize password = _password;
 @synthesize groupname = _groupname;
 @synthesize passcode = _passcode;
+@synthesize isAlive = _isAlive;
+@synthesize avatars = _avatars;
+
+- (NSData*)getAvatarDataByUsername:(NSString*)username
+{
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/getavatar"]];
+    NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
+    [dic setValue:username forKey:@"username"];
+    NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+    [request setHTTPBody:data];
+    [request setHTTPMethod:@"POST"];
+    NSHTTPURLResponse* urlResponse = nil;
+    NSData* responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
+    //NSLog(@"%@", responseData);
+    return responseData;
+}
 
 - (void)setRawData:(NSData *)rawData
               user:(NSString *)username
@@ -46,8 +64,13 @@
     self.bubbleData = [[NSMutableArray alloc] init];
     for (NSDictionary* dic in array)
     {
+        NSString* dicUsername = [dic valueForKey:@"username"];
+        if ([self.avatars valueForKey:dicUsername] == nil)
+        {
+            NSData* data = [self getAvatarDataByUsername:dicUsername];
+            [self.avatars setValue:data forKey:dicUsername];
+        }
         NSBubbleData *heyBubble;
-        NSLog(@"%@", [dic valueForKey:@"content"]);
         if ([[dic valueForKey:@"username"] isEqualToString:self.username])
         {
             heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeMine];
@@ -56,14 +79,8 @@
         {
             heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeSomeoneElse];
         }
-        if ([[dic valueForKey:@"username"] isEqualToString:@"yoyosir1"])
-        {
-            heyBubble.avatar = [UIImage imageNamed:@"avatar1.png"];
-        }
-        else
-        {
-            heyBubble.avatar = [UIImage imageNamed:@"avatar2.png"];
-        }
+        heyBubble.avatar = [UIImage imageWithData:[self.avatars valueForKey:dicUsername]];
+        NSLog(@"%f", heyBubble.avatar.size.height);
         [self.bubbleData addObject:heyBubble];
     }
 }
@@ -76,7 +93,7 @@
 
 - (void)updateData
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/retrievemessage"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/retrievemessage"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
@@ -115,7 +132,7 @@
     [self presentViewController:controller animated:YES completion:nil];
     /*
     NSData* imageData = UIImagePNGRepresentation([UIImage imageNamed:@"avatar1.png"]);
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/uploadimage"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/uploadimage"]];
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     [request setHTTPShouldHandleCookies:NO];
     [request setTimeoutInterval:30];
@@ -179,6 +196,7 @@
     self.navigationItem.title = self.groupname;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(selectPhoto)];
     self.bubbleTable.bubbleDataSource = self;
+    self.avatars = [[NSMutableDictionary alloc] init];
     
     // The line below sets the snap interval in seconds. This defines how the bubbles will be grouped in time.
     // Interval of 120 means that if the next messages comes in 2 minutes since the last message, it will be added into the same group.
@@ -205,13 +223,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
     //[self updateData];
+    self.isAlive = YES;
     [NSThread detachNewThreadSelector:@selector(backgroupUpdate) toTarget:self withObject:nil];
     
 }
 
 - (void)backgroupUpdate
 {
-    while (true)
+    while (self.isAlive)
     {
         [self updateData];
         [NSThread sleepForTimeInterval:2];
@@ -302,7 +321,7 @@
     [self.bubbleData addObject:sayBubble];
     [self.bubbleTable reloadData];
     */
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/sendmessage"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/sendmessage"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
@@ -318,6 +337,11 @@
     
     self.textField.text = @"";
     [self.textField resignFirstResponder];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    self.isAlive = NO;
 }
 
 /*

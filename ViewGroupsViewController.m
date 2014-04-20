@@ -41,7 +41,7 @@
 
 - (void)loadTableData
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/searchgroup"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/searchgroup"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
@@ -65,7 +65,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/createuser"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/createuser"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
@@ -159,7 +159,7 @@
         {
             self.groupname = [alertView textFieldAtIndex:0].text;
             self.passcode = [alertView textFieldAtIndex:1].text;
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/creategroup"]];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/creategroup"]];
             NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
             [dic setValue:self.username forKey:@"username"];
             [dic setValue:self.password forKey:@"password"];
@@ -180,7 +180,7 @@
         if (buttonIndex == 1)
         {
             self.passcode = [alertView textFieldAtIndex:0].text;
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/joingroup"]];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/joingroup"]];
             NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
             [dic setValue:self.username forKey:@"username"];
             [dic setValue:self.password forKey:@"password"];
@@ -200,7 +200,7 @@
 
 -(void)enterGroup
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/retrievemessage"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/retrievemessage"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
     [dic setValue:self.username forKey:@"username"];
     [dic setValue:self.password forKey:@"password"];
