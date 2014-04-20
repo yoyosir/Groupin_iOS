@@ -10,6 +10,9 @@
 #import <MapKit/MapKit.h>
 
 @interface MyAnnotation : NSObject<MKAnnotation>
+@property (nonatomic) BOOL draggable;
+@property (nonatomic, copy) NSString* title;
+@property (nonatomic, copy) NSString* subTitle;
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coord;
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;

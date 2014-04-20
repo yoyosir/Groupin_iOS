@@ -73,20 +73,6 @@
 {
     [super viewDidLoad];
     self.locationManager = [[CLLocationManager alloc] init];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/createuser"]];
-    NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
-    [dic setValue:self.username forKey:@"username"];
-    [dic setValue:self.password forKey:@"password"];
-    [dic setValue:self.username forKey:@"nickname"];
-    NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
-    NSLog(@"data:%@\n", [[NSString alloc] initWithData:data encoding:4]);
-    [request setHTTPBody:data];
-    [request setHTTPMethod:@"POST"];
-    NSHTTPURLResponse* urlResponse = nil;
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
-    NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
-    NSLog(@"create user respond:%@", responseString);
-
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createGroup)];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -208,7 +194,15 @@
             NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
             NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
             NSLog(@"join group:%@", responseString);
-            [self enterGroup];
+            if ([responseString isEqualToString:@"invalid passcode"] || [responseString isEqualToString:@"denied"])
+            {
+                UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Denied" message:responseString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+            }
+            else
+            {
+                [self enterGroup];
+            }
         }
     }
 }
@@ -226,17 +220,8 @@
     [request setHTTPMethod:@"POST"];
     NSHTTPURLResponse* urlResponse = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
-    NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
-    if ([responseString isEqualToString:@"invalid passcode"] || [responseString isEqualToString:@"denied"])
-    {
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Denied" message:responseString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-    }
-    else
-    {
-        self.rawData = responseData;
-        [self performSegueWithIdentifier:@"segueToChat" sender:self];
-    }
+    self.rawData = responseData;
+    [self performSegueWithIdentifier:@"segueToChat" sender:self];
 }
 
 

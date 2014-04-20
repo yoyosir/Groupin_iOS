@@ -15,14 +15,10 @@
 @end
 @implementation MyAnnotation
 @synthesize coordinate = _coordinate;
+@synthesize draggable = _draggable;
+@synthesize title = _title;
+@synthesize subTitle = _subTitle;
 
-- (NSString *)subtitle{
-    return @"hisub";
-}
-
-- (NSString *)title{
-    return @"hi";
-}
 
 -(id)initWithCoordinate:(CLLocationCoordinate2D)coord {
     _coordinate=coord;

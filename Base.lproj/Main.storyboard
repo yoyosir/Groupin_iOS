@@ -168,6 +168,7 @@
                     <navigationItem key="navigationItem" id="EsC-8Z-hYe"/>
                     <connections>
                         <outlet property="mapView" destination="NTE-WW-1qf" id="Qcn-7Y-URi"/>
+                        <segue destination="TFR-sc-8B7" kind="push" identifier="mapToChat" id="xIL-hq-RFp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ez-BE-lxj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -239,6 +240,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="6sV-oP-pmj"/>
+        <segue reference="xIL-hq-RFp"/>
     </inferredMetricsTieBreakers>
 </document>
