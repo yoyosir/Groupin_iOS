@@ -48,9 +48,6 @@
     NSHTTPURLResponse* urlResponse = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
     self.groups = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil];
-    NSLog(@"%lu", (unsigned long)[responseData length]);
-    NSLog(@"%@,Done", [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]);
-    NSLog(@".....");
 }
 
 - (void)viewDidLoad
@@ -96,8 +93,8 @@
     self.passcode =[[self.groups objectAtIndex:indexPath.row] valueForKey:@"passcode"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/retrievemessage"]];
     NSMutableDictionary *dic  = [[NSMutableDictionary alloc] init];
-    [dic setValue:@"yoyosir1" forKey:@"username"];
-    [dic setValue:@"111" forKey:@"password"];
+    [dic setValue:self.username forKey:@"username"];
+    [dic setValue:self.password forKey:@"password"];
     [dic setValue:self.groupname forKey:@"groupname"];
     [dic setValue:self.passcode forKey:@"passcode"];
     NSData* data = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
@@ -114,6 +111,7 @@
     else
     {
         self.rawData = responseData;
+        NSLog(@"%@", responseString);
         [self performSegueWithIdentifier:@"fromMyGroupToChat" sender:self];
     }
 
@@ -125,7 +123,7 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-	[segue.destinationViewController setRawData:self.rawData user:@"yoyosir1" password:@"111" group:self.groupname passcode:self.passcode];
+	[segue.destinationViewController setRawData:self.rawData user:self.username password:self.password group:self.groupname passcode:self.passcode];
 }
 
 

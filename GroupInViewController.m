@@ -42,7 +42,7 @@
     [sheet showInView:self.view];
 }
 
-- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
++ (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
     UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -95,7 +95,7 @@
     CGSize size;
     size.width = 100;
     size.height = 100;
-    image = [self imageWithImage:image scaledToSize:size];
+    image = [GroupInViewController imageWithImage:image scaledToSize:size];
     self.imageView.image = image;
     NSData* imageData = UIImagePNGRepresentation(image);
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/uploadavatar"]];

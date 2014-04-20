@@ -37,6 +37,14 @@
 @synthesize isAlive = _isAlive;
 @synthesize avatars = _avatars;
 
+- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
 - (NSData*)getAvatarDataByUsername:(NSString*)username
 {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://groupintemp.appspot.com/groupin/getavatar"]];
@@ -57,6 +65,8 @@
              group:(NSString *)groupname
           passcode:(NSString *)passcode
 {
+    NSString *responseString = [[NSString alloc]initWithData:rawData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@", responseString);
     self.username = username;
     self.password = password;
     self.groupname = groupname;
@@ -72,13 +82,30 @@
             [self.avatars setValue:data forKey:dicUsername];
         }
         NSBubbleData *heyBubble;
-        if ([[dic valueForKey:@"username"] isEqualToString:self.username])
+        if ([[dic valueForKey:@"type"] isEqualToString:@"text"])
         {
-            heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeMine];
+            if ([[dic valueForKey:@"username"] isEqualToString:self.username])
+            {
+                heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeMine];
+            }
+            else
+            {
+                heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeSomeoneElse];
+            }
         }
         else
         {
-            heyBubble = [NSBubbleData dataWithText:[dic valueForKey:@"content"] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeSomeoneElse];
+            NSString* string = [dic valueForKey:@"content"];
+            NSLog(@"%@", string);
+            NSData* imageData = [[NSData alloc] initWithBase64EncodedString:string options:0];
+            if ([[dic valueForKey:@"username"] isEqualToString:self.username])
+            {
+                heyBubble = [NSBubbleData dataWithImage:[UIImage imageWithData:imageData] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeMine];
+            }
+            else
+            {
+                heyBubble = [NSBubbleData dataWithImage:[UIImage imageWithData:imageData] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeSomeoneElse];
+            }
         }
         heyBubble.avatar = [UIImage imageWithData:[self.avatars valueForKey:dicUsername]];
         [self.bubbleData addObject:heyBubble];
@@ -165,8 +192,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
     //[self updateData];
-    self.isAlive = YES;
-    [NSThread detachNewThreadSelector:@selector(backgroupUpdate) toTarget:self withObject:nil];
     
 }
 
@@ -177,6 +202,13 @@
         [self updateData];
         [NSThread sleepForTimeInterval:2];
     }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.isAlive = YES;
+    [NSThread detachNewThreadSelector:@selector(backgroupUpdate) toTarget:self withObject:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -202,12 +234,69 @@
 {
     UIImage *image = [info valueForKey:UIImagePickerControllerOriginalImage];
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSBubbleData* sayBubble = [NSBubbleData dataWithImage:image date:[NSDate dateWithTimeIntervalSinceNow:0] type:BubbleTypeMine];
-    [self.bubbleData addObject:sayBubble];
-    if ([self.username isEqualToString:@"yoyosir1"])
-    {
-        sayBubble.avatar = [UIImage imageNamed:@"avatar1.png"];
+    CGSize size;
+    size.width = image.size.width / 4;
+    size.height = image.size.height / 4;
+    image = [self imageWithImage:image scaledToSize:size];
+    NSLog(@"%lf, %lf", image.size.height, image.size.width);
+    NSData* imageData = UIImagePNGRepresentation(image);
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://1-dot-groupintemp.appspot.com/groupin/upload"]];
+    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    [request setHTTPShouldHandleCookies:NO];
+    [request setTimeoutInterval:30];
+    [request setHTTPMethod:@"POST"];
+    
+    
+    NSString *BoundaryConstant = @"V2ymHFg03ehbqgZCaKO6jy";
+    
+    // set Content-Type in HTTP header
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data, boundary=%@", BoundaryConstant];
+    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+    
+    // post body
+    NSMutableData *body = [NSMutableData data];
+    
+    NSMutableDictionary* _params = [[NSMutableDictionary alloc] init];
+    [_params setObject:self.username forKey:@"username"];
+    [_params setObject:self.groupname forKey:@"groupname"];
+    //[_params setObject:[NSString stringWithFormat:@"%@", self.username] forKey:@"username"];
+    //[_params setObject:[NSString stringWithFormat:@"%@", self.groupname] forKey:@"groupname"];
+    //[_params setObject:[NSString stringWithFormat:@"%@", @"hi"] forKey:@"title"];
+    //NSData* data = [NSJSONSerialization dataWithJSONObject:_params options:NSJSONWritingPrettyPrinted error:nil];
+    
+    
+    for (NSString *param in _params) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [_params objectForKey:param]] dataUsingEncoding:NSUTF8StringEncoding]];
     }
+    
+    //[body appendData:data];
+    
+    NSString* FileParamConstant = @"photo";
+    // add image data
+    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"avatar1.png\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: image/png\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        //[body appendData:[@"Content-Transfer-Encoding: binary\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:imageData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    // setting the body of the post to the reqeust
+    [request setHTTPBody:body];
+    
+    // set the content-length
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+    NSLog(@"response:%@", responseString);
+
     [self.bubbleTable reloadData];
 }
 
