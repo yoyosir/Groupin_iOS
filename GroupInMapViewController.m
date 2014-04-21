@@ -184,6 +184,12 @@ didChangeDragState:(MKAnnotationViewDragState)newState
     self.locationManager = [[CLLocationManager alloc] init];
     [self.locationManager startUpdatingLocation];
     self.mapView.delegate = self;
+    MKCoordinateRegion region;
+    region.center = self.locationManager.location.coordinate;
+    region.span.latitudeDelta = 0.02;
+    region.span.longitudeDelta = 0.015;
+    self.mapView.region = region;
+    
     [self updateGroupInfoWithLocation:self.locationManager.location.coordinate];
 
 	// Do any additional setup after loading the view.

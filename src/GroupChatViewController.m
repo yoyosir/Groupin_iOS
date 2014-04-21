@@ -107,7 +107,8 @@
                 heyBubble = [NSBubbleData dataWithImage:[UIImage imageWithData:imageData] date:[NSDate dateWithTimeIntervalSince1970:[[dic valueForKey:@"time"] doubleValue] / 1000] type:BubbleTypeSomeoneElse];
             }
         }
-        heyBubble.avatar = [UIImage imageWithData:[self.avatars valueForKey:dicUsername]];
+        if ([[self.avatars valueForKey:dicUsername] length] > 100)
+    		heyBubble.avatar = [UIImage imageWithData:[self.avatars valueForKey:dicUsername]];
         [self.bubbleData addObject:heyBubble];
     }
 }

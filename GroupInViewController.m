@@ -221,7 +221,7 @@
             NSString *responseString = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
             if (![responseString isEqualToString:@"success"])
             {
-                self.failAlert = [[UIAlertView alloc] initWithTitle:@"Username exists" message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+                self.failAlert = [[UIAlertView alloc] initWithTitle:@"Username exists" message:responseString delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
                 [self.failAlert show];
             }
         }
@@ -234,7 +234,14 @@
         NSHTTPURLResponse* urlResponse = nil;
         NSData* responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
         //NSLog(@"%@", responseData);
-        self.imageView.image = [[UIImage alloc] initWithData:responseData];
+        if ([responseData length] < 100)
+        {
+            self.imageView.image = [UIImage imageNamed:@"missingAvatar.png"];
+        }
+        else
+        {
+            self.imageView.image = [[UIImage alloc] initWithData:responseData];
+        }
         //NSLog(@"%f, %f", self.imageView.image.size.width, self.imageView.image.size.height);
     }
 }
@@ -252,7 +259,7 @@
 {
     [super viewDidLoad];
     [self showLoginAlert];
-
+	[self.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"logout" style:UIBarButtonItemStylePlain target:self action:@selector(showLoginAlert)]];
     [self.navigationItem setTitle:@"GroupIn"];
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"avatar" style:UIBarButtonItemStyleBordered target:self action:@selector(setting)]];
 }
