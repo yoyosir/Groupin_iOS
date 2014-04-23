@@ -109,6 +109,7 @@
     if (annotation == self.annotation)
     {
         pin.draggable = YES;
+        pin.canShowCallout = NO;
         pin.pinColor = MKPinAnnotationColorGreen;
 
     }

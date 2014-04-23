@@ -48,6 +48,7 @@
     NSHTTPURLResponse* urlResponse = nil;
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:nil];
     self.groups = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:nil];
+    NSLog(@"%@", [[NSString alloc] initWithData:responseData encoding:4]);
 }
 
 - (void)viewDidLoad
